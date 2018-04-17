@@ -1,62 +1,65 @@
 <template>
   <div id="calcWrap">
 	<h1>Calculator Vue.js</h1>
-  <input v-model="current" type="number" placeholder="0" autofocus/>
-	<div>Saved number: {{ current }}</div>
+  <input v-model="current"  type="number" v-bind:placeholder="placeholder" autofocus/>
+  <div>Current number: {{ current }}</div>
+	<div>Saved number: {{ saved}}</div>
   <div>Result: {{ result }} </div>
 
 	<div class="buttonWrap">
 		<div class="left">
-			<div v-bind:class="digitBtn">
-				<button v-on:click="doMath">7</button>
-				<button v-on:click="doMath">8</button>
-				<button v-on:click="doMath">9</button>
+			<div class="digitBtn">
+				<button value="7" v-on:click="getNumber('7')">7</button>
+				<button value="8" v-on:click="getNumber('8')">8</button>
+				<button value="9" v-on:click="getNumber('9')">9</button>
 			</div>
-			<div v-bind:class="digitBtn">
-				<button v-on:click="doMath">4</button>
-				<button v-on:click="doMath">5</button>
-				<button v-on:click="doMath">6</button>
+			<div class="digitBtn">
+				<button value="4" v-on:click="getNumber('4')">4</button>
+				<button value="5" v-on:click="getNumber('5')">5</button>
+				<button value="6" v-on:click="getNumber('6')">6</button>
 			</div>
-			<div v-bind:class="digitBtn">
-				<button v-on:click="doMath">1</button>
-				<button v-on:click="doMath">2</button>
-				<button v-on:click="doMath">3</button>
+			<div class="digitBtn">
+				<button value="1" v-on:click="getNumber('1')">1</button>
+				<button value="2" v-on:click="getNumber('2')">2</button>
+				<button value="3" v-on:click="getNumber('3')">3</button>
 			</div>
-			<div v-bind:class="digitBtn">
-				<button v-on:click="doMath">0</button>
+			<div class="digitBtn">
+				<button value="0" v-on:click="getNumber('0')">0</button>
 			</div>
 		</div>
 
 		<div class="right">
-			 <div v-bind:class="operatorBtn">
-				<button v-on:click="doMath" >+</button>
-				<button v-on:click="doMath" >-</button>
+			 <div class="operatorBtn">
+				<button v-on:click="doMath('+')" >+</button>
+				<button v-on:click="doMath('-')" >-</button>
 			</div>
-			<div v-bind:class="operatorBtn">
-				<button v-on:click="doMath">*</button>
-				<button v-on:click="doMath">/</button>
+			<div class="operatorBtn">
+				<button v-on:click="doMath('*')">*</button>
+				<button v-on:click="doMath('/')">/</button>
 			</div>
-			<div v-bind:class="operatorBtn">
-				<button v-on:click="doMath">x2</button>
-				<button v-on:click="doMath" v-if="negativeNum">√</button>
+			<div class="operatorBtn">
+				<button v-on:click="squere">x2</button>
+				<button v-on:click="squereRoot('√')" v-if="negativeNum">√</button>
 			</div>
 			<div>
-				<button v-bind:class="clearBtn" v-on:click="clear">C</button>
-				<button v-on:click="getResult" v-bind:class="equal">=</button>
+				<button class="clearBtn" v-on:click="clear">C</button>
+				<button v-on:click="getResult" class="equal">=</button>
 			</div>
 		</div>
 </div>
   <div>History {{ history }}</div>
+  <div class="howToUse">
+    How to use this calculator:
+    <ol>
+      <li><em>Calculator Vue.js</em> is always right.</li>
+      <li>For your own safety we higly recommend to use only number buttons.</li>
+      <li>Function for "square" and "square root" works only with simple equation. Please, don't make it complicated!</li>
+      <li>If you are using <em>Calculator Vue.js</em> e.g. for your tax, we recommend to use another calcualor. </li>
+    </ol>
+
+  </div>
 </div>
 </template>
-
-<!-- TODO
-- inputfälte registreras inte ibland !important
-- mellanresultat visas inte
-- funktion för operationerna x2 och √ (roten ur)
-- räkna rätt! en mellanresultat
-
--->
 
 <script>
     export default{
@@ -65,45 +68,111 @@
     data: function(){
       return{
 				current: '',
-				saved:0,
-        result: 0,
+				saved:'',
+        result: '',
+        showCurrResult: '',
+        placeholder: 0,
+        operator:'',
+        lastOperator:'',
         history: [],
-        equal: 'equal',
-				clearBtn: 'clearBtn',
-        operatorBtn: 'operatorBtn',
-				digitBtn: 'digitBtn',
         negativeNum: true,
       };
     }, //data
     methods:{
-			doMath: function(event){
-        let value = event.target.innerText;
-        if(value !== "+" && value !== "-" && value !== "*" && value !== "/" && value !== "="){
-          this.current += value;
-          console.log(value);
-        }else{
-          switch(value){
-            case "+":
-              this.current += event.target.innerText;
-              break;
+      getNumber:function(num){
+        console.log(num);
+        this.current += num; //current är sträng
+      },
+      // ______________Welcome to the world where you can use function eval()________________
+			doMath: function(sign){
+        //- current sparas till saved
+        //- /* har högre prioritet än +-
+        this.operator = sign;
+        console.log(this.operator);
+        if (sign == '+' || sign == '-') {
+          if (this.saved !== '') {
+            let value;
+            if (this.lastOperator === '+') {
+              value = Number(this.saved) + Number(this.current);
+              console.log(value);
+            } else if (this.lastOperator === '-') {
+              value = Number(this.saved) - Number(this.current);
+            } else if (this.lastOperator === '/') {
+              value = Number(this.saved) / Number(this.current);
+            } else if (this.lastOperator === '*') {
+              value = Number(this.saved) * Number(this.current);
+            }
+            this.saved = value;
+            this.current = '';
+            this.lastOperator = sign;
+            console.log(this.lastOperator);
+         }else{
+           this.lastOperator = sign;
+           this.saved = this.current;
+           this.current= '';
+         }
+         //end of plus/minus sign
+       }else if(sign == '*' || sign == '/'){
 
-            case "-":
-              this.current += event.target.innerText;
-              break;
+         if (this.saved !== '') {
+           let value;
+           if (this.lastOperator === '+') {
+             value = Number(this.saved) + Number(this.current);
+             console.log(value);
+           } else if (this.lastOperator === '-') {
+             value = Number(this.saved) - Number(this.current);
+           } else if (this.lastOperator === '/') {
+             value = Number(this.saved) / Number(this.current);
+           } else if (this.lastOperator === '*') {
+             value = Number(this.saved) * Number(this.current);
+           }
+           this.saved = value;
+           this.current = '';
+           this.lastOperator = sign;
+           console.log(this.lastOperator);
+       }
+       else{
+         this.lastOperator = sign;
+         this.saved = this.current;
+         this.current= '';
+       }
+     } //end of */
 
-            case "*":
-              this.current += event.target.innerText;
-              break;
-
-            case "/":
-              this.current += event.target.innerText;
-              break;
-          }
-        }
-
+        // if(this.operator === "+") {
+        //      console.log('blablabla');
+        //      console.log(this.saved);
+        //   }
+        //   else if(this.operator === "-") {
+        //     this.saved = this.saved - this.current;
+        //   }
+        //   else if(this.operator === '*') {
+        //     this.current = this.current * this.value
+        //   }
+        //   else if(this.operator === '/') {
+        //     this.current = this.current / this.value
+        //   }
+          // this.saved = this.current;
 			},
-      getResult: function(event){
-        this.result = eval(this.current);
+
+      getResult: function(val){
+        if (this.saved !== '') {
+          let value;
+          if (this.lastOperator === '+') {
+            value = Number(this.saved) + Number(this.current);
+            console.log(value);
+          } else if (this.lastOperator === '-') {
+            value = Number(this.saved) - Number(this.current);
+          } else if (this.lastOperator === '/') {
+            value = Number(this.saved) / Number(this.current);
+          } else if (this.lastOperator === '*') {
+            value = Number(this.saved) * Number(this.current);
+          }
+          this.result = value;
+        }
+        this.current = '';
+        // this.saved = this.result;
+        this.saved = '';
+
         if(this.result < 0){
           this.negativeNum = false;
           console.log(this.negativeNum);
@@ -116,15 +185,25 @@
           if(this.history.length >= 5){
             this.history.pop();
           }
-          this.current = this.result;
         }
+      },//end of getResult
+      squere: function(){
+        console.log(parseInt(this.saved));
+        this.saved= Math.pow(this.current, 2);
+        console.log('square is ', this.saved);
       },
-
-
+      squereRoot: function(root){
+        console.log(parseInt(this.current));
+        this.saved= Math.sqrt(this.current);
+        console.log(this.saved);
+      },
 			clear:function(event){
 				this.current = '';
 				this.result = '';
-				console.log(this.current);
+        this.placeholder = '0';
+        this.saved='';
+        this.showCurrResult= '';
+        this.negativeNum = true;
 			}
     }// methods
   }; //Vue object
@@ -160,10 +239,12 @@ body {
     display: flex;
     flex-direction: column;
     font-family: 'Roboto Mono', monospace;
+    justify-content: space-between;
     margin:0;
     padding: 15px;
     text-align: center;
     width: 350px;
+    height: auto;
   }
   .buttonWrap{
     display:flex;
@@ -176,6 +257,7 @@ body {
     text-align: right;
     font-family:courier;
     font-size: 30px;
+    margin-bottom: 10px;
   }
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
@@ -233,6 +315,12 @@ body {
   }
   .operatorBtn>button:hover, .digitBtn>button:hover, .equal:hover{
     color: #111F4D;
+  }
+  .howToUse{
+    background-color: #84B9EF;
+    border: 1px solid #FFFFFF;
+    margin:10px;
+    text-align:left;
   }
 
 </style>
