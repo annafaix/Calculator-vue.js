@@ -54,7 +54,7 @@
       <li><em>Calculator Vue.js</em> is always right.</li>
       <li>For your own safety we higly recommend to use only number buttons.</li>
       <li>Function for "square" and "square root" works only with simple equation. Please, don't make it complicated!</li>
-      <li>If you are using <em>Calculator Vue.js</em> e.g. for your tax, we recommend to use another calcualor. </li>
+      <li>If you are using <em>Calculator Vue.js</em> e.g. for your tax, we recommend to use another calculator. </li>
     </ol>
 
   </div>
