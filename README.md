@@ -1,6 +1,6 @@
 # calculator
 
-> [C[2~createomng a calculator[C
+> 
 
 ## Commands
 
